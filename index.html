@@ -7,47 +7,52 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=2" />
 <link rel="icon" type="image/png" sizes="32x32" href="lobby-assets/favicon-32.png?v=2" />
 <link rel="icon" type="image/png" sizes="192x192" href="lobby-assets/icon-192.png" />
-<link rel="manifest" href="manifest.json?v=2" />
+<link rel="manifest" href="manifest.json?v=3" />
 <link rel="apple-touch-icon" href="lobby-assets/apple-touch-icon.png">
 <meta name="theme-color" content="#0b3d2e">
 <style>
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:#0b3d2e;color:#f5f0e1;font-family:system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;padding:32px 20px}
-header{text-align:center;margin-bottom:28px}
-h1{margin:0 0 6px;font-size:30px;letter-spacing:.5px;color:#f5c542}
-header p{margin:0;opacity:.75;font-size:15px}
-.games{display:flex;flex-direction:column;gap:14px;width:100%;max-width:420px}
-.game{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(245,197,66,.25);border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
-.game img{width:56px;height:56px;border-radius:12px;flex:none}
+body{margin:0;min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%,#1d6b4f 0%,#0b3d2e 55%,#072a20 100%);color:#f5f0e1;font-family:system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;padding:36px 18px}
+header{text-align:center;margin-bottom:26px}
+h1{margin:0 0 6px;font-size:34px;letter-spacing:.5px;color:#f5c542;text-shadow:0 2px 18px rgba(245,197,66,.35)}
+header p{margin:0;opacity:.8;font-size:15px}
+.games{display:grid;gap:18px;width:100%;max-width:460px}
+.game{display:block;background:rgba(255,255,255,.07);border:1px solid rgba(245,197,66,.28);border-radius:18px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 10px 30px rgba(0,0,0,.28);transition:transform .15s,box-shadow .15s}
+.game:hover,.game:focus-visible{transform:translateY(-3px);box-shadow:0 16px 36px rgba(0,0,0,.38);outline:none;border-color:#f5c542}
+.game .art{display:block;width:100%;aspect-ratio:5/3;object-fit:cover;object-position:top;background:#0a3327}
+.game .row{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.game .row img{width:44px;height:44px;border-radius:10px;flex:none}
 .game .t{flex:1}
-.game .t b{display:block;font-size:17px;color:#fff}
-.game .t span{font-size:13px;opacity:.7}
-.game .go{font-size:22px;color:#f5c542}
+.game .t b{display:block;font-size:18px;color:#fff}
+.game .t span{font-size:13px;opacity:.75}
+.tags{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 14px}
+.tags i{font-style:normal;font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(245,197,66,.14);color:#f5d77a}
+.game .go{font-size:15px;font-weight:700;color:#3a2a00;background:#f5c542;border-radius:999px;padding:7px 14px}
 #installBtn{margin-top:26px;background:#f5c542;color:#3a2a00;font-weight:700;border:none;padding:14px 28px;border-radius:14px;font-size:16px;cursor:pointer}
 #installBtn[hidden]{display:none}
-footer{margin-top:auto;padding-top:32px;font-size:12px;opacity:.5}
+footer{margin-top:auto;padding-top:32px;font-size:12px;opacity:.55;text-align:center}
 </style>
 </head>
 <body>
 <header>
 <h1>NovelTie Arcade</h1>
-<p>A personal arcade of word &amp; puzzle games.</p>
+<p>Family word &amp; puzzle games. Free, kid-friendly, play together.</p>
 </header>
 <div class="games">
 <a class="game" href="https://games.noveltie.com/solitaire-word-match/">
-<img src="https://games.noveltie.com/solitaire-word-match/assets/icon-192.png" alt="">
-<span class="t"><b>Solitaire Word Match</b><span>Word-association solitaire &middot; 30 levels</span></span>
-<span class="go">&#9654;</span>
+<img class="art" src="lobby-assets/card-swm.jpg?v=3" alt="" loading="lazy">
+<span class="row"><img src="https://games.noveltie.com/solitaire-word-match/assets/icon-192.png" alt=""><span class="t"><b>Solitaire Word Match</b><span>Word-association solitaire &middot; 30 levels</span></span><span class="go">Play</span></span>
+<span class="tags"><i>1&ndash;2 players</i><i>Pass the phone</i><i>Saves progress</i></span>
 </a>
 <a class="game" href="https://games.noveltie.com/rootline/">
-<img src="https://games.noveltie.com/rootline/assets/icon-192.png" alt="">
-<span class="t"><b>Rootline</b><span>Etymology dig &middot; 41 words &middot; Script Gates</span></span>
-<span class="go">&#9654;</span>
+<img class="art" src="lobby-assets/card-rootline.jpg?v=3" alt="" loading="lazy">
+<span class="row"><img src="https://games.noveltie.com/rootline/assets/icon-192.png" alt=""><span class="t"><b>Rootline</b><span>Etymology dig &middot; 41 words &middot; Script Gates</span></span><span class="go">Play</span></span>
+<span class="tags"><i>Daily Dig</i><i>Hear words aloud</i><i>~3 min</i></span>
 </a>
 <a class="game" href="https://games.noveltie.com/line-upon-line/">
-<img src="https://games.noveltie.com/line-upon-line/assets/icon-192.png" alt="">
-<span class="t"><b>Line upon Line</b><span>Gospel learning &middot; Doctrine, history &amp; scripture mastery</span></span>
-<span class="go">&#9654;</span>
+<img class="art" src="lobby-assets/card-lineuponline.jpg?v=3" alt="" loading="lazy">
+<span class="row"><img src="https://games.noveltie.com/line-upon-line/assets/icon-192.png" alt=""><span class="t"><b>Line upon Line</b><span>Gospel learning &middot; Doctrine, history &amp; scripture mastery</span></span><span class="go">Play</span></span>
+<span class="tags"><i>Daily Five</i><i>Listen aloud</i><i>Sourced quotes</i></span>
 </a>
 </div>
 <button id="installBtn" hidden>Install Arcade app</button>
