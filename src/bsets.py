@@ -582,6 +582,7 @@ def build_forest(o, assets):
         for j in range(3):
             b = blob_mesh('FCanopy', rnd.uniform(4, 6.5), i * 3 + j, 2, 0.25, canopy)
             b.location = (x + rnd.uniform(-3, 3), y + rnd.uniform(-3, 3), h + rnd.uniform(-1, 3))
+            if math.hypot(b.location.x - 0.2, b.location.y - 13.4) < 8.5: b.hide_render = True   # sky hole over the golden orb
     wallm = noise_mat('ForestWall', '#1E3A26', '#3A5E36', 0.3, 0.95)
     wallm.node_tree.nodes['Principled BSDF'].inputs['Emission Color'].default_value = srgb('#2A4A30')
     wallm.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 1.2
