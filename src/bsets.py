@@ -552,7 +552,7 @@ def build_ranch(o, assets):
     # lawn rail fence around the front + grass blades where the froggies act
     fence(-40, -22, 40, -22, 2.4, 'FrontFence')
     for nm, cx_, cy_, rx_, ry_, n in o.get('grass', [['GrassLawn', 0, 0, 11, 9, 360000], ['GrassGarden', -9, 4.5, 9, 6, 240000]]):
-        make_grass(nm, cx_, cy_, rx_, ry_, n, seed=hash(nm) % 1000,
+        make_grass(nm, cx_, cy_, rx_, ry_, n, seed=sum(map(ord, nm)), hmin=0.04, hmax=0.13,
                    avoid=[(gx + bx, gy + by, 1.7) for bx, by in [(-4.5, 2.5), (-4.5, 6.0), (2.5, 6.0), (6.5, 3.5)]])
     # trees: forest edge to the north + scattered trees
     fy = LAYOUT['forest_y']
@@ -571,7 +571,7 @@ def build_forest(o, assets):
     link(bpy.data.objects.new('Ground', me)).data.materials.append(moss)
     # big trunks + canopy
     bark = noise_mat('ForestBark', '#3A2A1E', '#5C4430', 5, 0.9, 0.7)
-    canopy = leaf_mat('Canopy', '#1F4418', '#3E6A26')
+    canopy = leaf_mat('Canopy', '#2C5A20', '#5A8A34')
     rnd = random.Random(21)
     path_clear = lambda x, y: abs(x - 0.6 * math.sin(y * 0.08) * 6) < 3.0 and -20 < y < 60
     for i in range(140):
@@ -582,6 +582,13 @@ def build_forest(o, assets):
         for j in range(3):
             b = blob_mesh('FCanopy', rnd.uniform(4, 6.5), i * 3 + j, 2, 0.25, canopy)
             b.location = (x + rnd.uniform(-3, 3), y + rnd.uniform(-3, 3), h + rnd.uniform(-1, 3))
+    wallm = noise_mat('ForestWall', '#16301A', '#2C4A26', 0.08, 0.95)
+    wallm.node_tree.nodes['Principled BSDF'].inputs['Emission Color'].default_value = srgb('#2A4A30')
+    wallm.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 0.35
+    wm = bpy.data.meshes.new('ForestWall'); bm = bmesh.new()
+    bmesh.ops.create_cone(bm, cap_ends=False, segments=64, radius1=70, radius2=70, depth=30)
+    bm.to_mesh(wm); bm.free()
+    w = link(bpy.data.objects.new('ForestWall', wm)); w.location = (0, 25, 15); wm.materials.append(wallm); smooth_obj(w)
     # ferns / bushes / mushrooms + grass
     fern = leaf_mat('Fern', '#2F5E1E', '#5E8E34')
     for i in range(160):
@@ -593,7 +600,7 @@ def build_forest(o, assets):
         x, y = rnd.uniform(-12, 12), rnd.uniform(-10, 45)
         if path_clear(x, y): continue
         ellipsoid('Shroom', (x, y, 0.15), (0.12, 0.12, 0.06), shroom, seg=12)
-    L = bpy.data.lights.new('ForestFill', 'AREA'); L.energy = 3000; L.size = 30; L.color = (0.75, 0.9, 1.0)
+    L = bpy.data.lights.new('ForestFill', 'AREA'); L.energy = 9000; L.size = 40; L.color = (0.75, 0.9, 1.0)
     lo = link(bpy.data.objects.new('ForestFill', L)); lo.location = (0, 5, 18)
     make_grass('ForestGrass', 0, 6, 9, 14, o.get('ngrass', 180000), seed=4, hmin=0.06, hmax=0.2)
     # orbs: 7 colours bobbing between the trees (+ the golden one, handled as a prop)
@@ -603,8 +610,9 @@ def build_forest(o, assets):
         c = cols[i % 7]
         x, y = rnd.uniform(-12, 12), rnd.uniform(-6, 40)
         z = rnd.uniform(1.2, 4.5)
-        ob = uv_sphere(f'Orb{i}', rnd.uniform(0.10, 0.16), 24, 12, emission_mat(f'OrbM{i%7}', srgb(c), 3.5))
-        halo = uv_sphere(f'OrbH{i}', ob.dimensions.x * 1.25, 24, 12, holo_like(f'OrbHM{i%7}', c, 2.0)); halo.parent = ob
+        r_o = rnd.uniform(0.10, 0.16)
+        ob = uv_sphere(f'Orb{i}', r_o, 24, 12, emission_mat(f'OrbM{i%7}', srgb(c), 3.5))
+        halo = uv_sphere(f'OrbH{i}', r_o * 2.2, 24, 12, glow_mat(f'OrbHM{i%7}', c, 2.5)); halo.parent = ob
         ob.location = (x, y, z)
         if i % 3 == 0:
             ld = bpy.data.lights.new(f'OrbL{i}', 'POINT'); ld.energy = 25; ld.color = srgb(c)[:3]; ld.shadow_soft_size = 0.15
@@ -654,6 +662,22 @@ def build_space(o, assets):
     mm = noise_mat('Mars', '#B8472A', '#E07A4A', 3, 0.9, 0.3)
     mars = uv_sphere('Mars', o.get('mars_r', 1.2), 64, 32, mm); mars.location = o.get('mars_pos', (-40, 260, 30))
     return dict(earth=earth, mars=mars)
+
+
+def glow_mat(name, col, strength):
+    """soft halo: bright in the middle, fading to nothing at the silhouette."""
+    m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear()
+    em = node(nt, 'ShaderNodeEmission'); em.inputs['Color'].default_value = srgb(col); em.inputs['Strength'].default_value = strength
+    tr = node(nt, 'ShaderNodeBsdfTransparent'); lw = node(nt, 'ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.5
+    inv = node(nt, 'ShaderNodeMath', operation='SUBTRACT'); inv.inputs[0].default_value = 1.0
+    nt.links.new(lw.outputs['Facing'], inv.inputs[1])
+    pw = node(nt, 'ShaderNodeMath', operation='POWER'); pw.inputs[1].default_value = 2.5
+    nt.links.new(inv.outputs[0], pw.inputs[0])
+    sc = node(nt, 'ShaderNodeMath', operation='MULTIPLY'); sc.inputs[1].default_value = 0.6
+    nt.links.new(pw.outputs[0], sc.inputs[0])
+    mx = node(nt, 'ShaderNodeMixShader'); nt.links.new(sc.outputs[0], mx.inputs[0]); nt.links.new(tr.outputs[0], mx.inputs[1]); nt.links.new(em.outputs[0], mx.inputs[2])
+    o = node(nt, 'ShaderNodeOutputMaterial'); nt.links.new(mx.outputs[0], o.inputs[0])
+    return m
 
 
 def holo_like(name, col, strength):

@@ -17,6 +17,8 @@ def orb_material(name, col, strength=6.0):
 
 def make_orb(name, col, r, strength=6.0, light=True, light_w=30.0):
     ob = uv_sphere(name, r, 32, 16, orb_material(name + 'M', col, strength))
+    import bsets
+    h = uv_sphere(name + 'Halo', r * 2.0, 24, 12, bsets.glow_mat(name + 'HM', col, 2.0)); h.parent = ob
     if light:
         ld = bpy.data.lights.new(name + 'L', 'POINT'); ld.energy = light_w; ld.color = srgb(col)[:3]; ld.shadow_soft_size = r
         lo = link(bpy.data.objects.new(name + 'L', ld)); lo.parent = ob

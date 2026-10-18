@@ -168,8 +168,21 @@ def taubin(v, f, it=6):
 MKEYS = ['smile', 'smirk', 'J', 'U', 'wide', 'pucker', 'fv', 'mbp']
 
 
-def mouth_key(P, q=0.004):
-    return tuple(int(round(float(P.get(k, 0.5 if k == 'smile' else 0.0)) / q)) for k in MKEYS)
+QK = dict(smile=0.05, smirk=0.05, J=0.003, U=0.002, wide=0.05, pucker=0.05, fv=0.1, mbp=0.1)
+
+
+def quant(P):
+    Q = dict(P)
+    for k, q in QK.items():
+        Q[k] = round(float(P.get(k, 0.5 if k == 'smile' else 0.0)) / q) * q
+    for k in ('brow_L', 'brow_R', 'echeek_L', 'echeek_R'):
+        Q[k] = round(float(P.get(k, 0.0)) / 0.1) * 0.1
+    return Q
+
+
+def mouth_key(P):
+    Q = quant(P)
+    return tuple(round(Q[k], 4) for k in MKEYS)
 
 
 def build_rest(P, vox):

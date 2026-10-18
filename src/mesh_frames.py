@@ -14,9 +14,10 @@ _acc = None
 
 
 def rest_mesh(face, vox):
+    face = MF.quant(face)
     k = (MF.mouth_key(face), round(vox, 4), tuple(round(float(face.get(n, 0)), 2) for n in ('brow_L', 'brow_R', 'echeek_L', 'echeek_R')))
     if k not in _rest:
-        if len(_rest) > 24: _rest.pop(next(iter(_rest)))
+        if len(_rest) > 40: _rest.pop(next(iter(_rest)))
         _rest[k] = MF.build_rest(face, vox)
     return _rest[k]
 
@@ -60,7 +61,7 @@ def main():
             if not C.get('visible', [1] * shot['frames'])[i]: continue
             vox = float(C.get('vox', vox_default))
             if name == 'PURPLE_BEAR':
-                F = dict(C['face'][i]); F['head'] = C['pose'][i].get('head', (0, 0, 0))
+                F = dict(C['face'][i]); F['head'] = C['pose'][i].get('head', (0, 0, 0)); F['J'] = float(F.get('J', 0)) * 0.45
                 v, f, A, Gh = mbear.build(F, vox)
                 o = dict(verts=v, faces=f, G_head=Gh, **A)
             else:
