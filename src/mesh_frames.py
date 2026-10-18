@@ -4,7 +4,7 @@
 # bone matrices (head/chest/jet/hand_L/hand_R, 4x4, same space), skinned accessory shells.
 import sys, os, json, time, numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
-import mfrog as MF, macc
+import mfrog as MF, macc, mbear
 
 SHIFT = np.eye(4); SHIFT[2, 3] = -MF.GROUND
 SHIFT_I = np.linalg.inv(SHIFT)
@@ -59,7 +59,12 @@ def main():
             i = fr - 1
             if not C.get('visible', [1] * shot['frames'])[i]: continue
             vox = float(C.get('vox', vox_default))
-            o = frame_mesh(name, C['pose'][i], C['face'][i], vox)
+            if name == 'PURPLE_BEAR':
+                F = dict(C['face'][i]); F['head'] = C['pose'][i].get('head', (0, 0, 0))
+                v, f, A, Gh = mbear.build(F, vox)
+                o = dict(verts=v, faces=f, G_head=Gh, **A)
+            else:
+                o = frame_mesh(name, C['pose'][i], C['face'][i], vox)
             np.savez(os.path.join(out, f'{name}_{fr:04d}.tmp.npz'), **o)
             os.replace(os.path.join(out, f'{name}_{fr:04d}.tmp.npz'), os.path.join(out, f'{name}_{fr:04d}.npz'))
         open(os.path.join(out, f'{fr:04d}.ok'), 'w').close()

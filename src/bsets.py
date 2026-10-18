@@ -83,7 +83,7 @@ def grass_ground_mat():
     tc = node(nt, 'ShaderNodeTexCoord', (-1000, 0))
     n = node(nt, 'ShaderNodeTexNoise', (-800, 0)); n.inputs['Scale'].default_value = 0.08; n.inputs['Detail'].default_value = 6
     nt.links.new(tc.outputs['Object'], n.inputs['Vector'])
-    r = node(nt, 'ShaderNodeValToRGB', (-550, 0)); r.color_ramp.elements[0].color = srgb('#3D6A1F'); r.color_ramp.elements[1].color = srgb('#86A53E')
+    r = node(nt, 'ShaderNodeValToRGB', (-550, 0)); r.color_ramp.elements[0].color = srgb('#3A5E1C'); r.color_ramp.elements[1].color = srgb('#6E8E30')
     nt.links.new(n.outputs['Fac'], r.inputs['Fac'])
     n2 = node(nt, 'ShaderNodeTexNoise', (-800, -300)); n2.inputs['Scale'].default_value = 9.0; n2.inputs['Detail'].default_value = 8
     nt.links.new(tc.outputs['Object'], n2.inputs['Vector'])
@@ -118,7 +118,10 @@ def grass_blade_mat():
 
 def make_grass(name, cx, cy, rx, ry, n, seed=11, hmin=0.08, hmax=0.26, avoid=None):
     rng = np.random.default_rng(seed)
-    x = cx + rng.uniform(-rx, rx, n); y = cy + rng.uniform(-ry, ry, n)
+    rr = np.sqrt(rng.uniform(0, 1, n)) ; aa = rng.uniform(0, 2 * np.pi, n)
+    keep0 = rng.uniform(0, 1, n) < np.clip((1.0 - rr) / 0.35, 0, 1) ** 0.7
+    x = cx + rx * rr * np.cos(aa); y = cy + ry * rr * np.sin(aa)
+    x, y = x[keep0], y[keep0]; n = len(x)
     if avoid:
         keep = np.ones(n, bool)
         for (ax, ay, ar) in avoid: keep &= (x - ax) ** 2 + (y - ay) ** 2 > ar ** 2
@@ -548,7 +551,7 @@ def build_ranch(o, assets):
     flower_bed(6.0, 2.5, 1.5, 2.5, 110, 9)
     # lawn rail fence around the front + grass blades where the froggies act
     fence(-40, -22, 40, -22, 2.4, 'FrontFence')
-    for nm, cx_, cy_, rx_, ry_, n in o.get('grass', [['GrassLawn', 0, 0, 9, 8, 300000], ['GrassGarden', -9, 4.5, 8, 5, 200000]]):
+    for nm, cx_, cy_, rx_, ry_, n in o.get('grass', [['GrassLawn', 0, 0, 11, 9, 360000], ['GrassGarden', -9, 4.5, 9, 6, 240000]]):
         make_grass(nm, cx_, cy_, rx_, ry_, n, seed=hash(nm) % 1000,
                    avoid=[(gx + bx, gy + by, 1.7) for bx, by in [(-4.5, 2.5), (-4.5, 6.0), (2.5, 6.0), (6.5, 3.5)]])
     # trees: forest edge to the north + scattered trees
@@ -560,7 +563,7 @@ def build_ranch(o, assets):
 
 
 def build_forest(o, assets):
-    sun = world(find_hdri(assets, o.get('hdri', 'qwantani_morning_puresky')), o.get('env', 0.35), o.get('hdri_rot', 0),
+    sun = world(find_hdri(assets, o.get('hdri', 'qwantani_morning_puresky')), o.get('env', 0.75), o.get('hdri_rot', 0),
                 sun=dict(energy=o.get('sun', 1.6), elev_from_zenith=50, azim=-30, color=(1.0, 0.85, 0.65)))
     moss = noise_mat('ForestFloor', '#2E4A1C', '#4F6A2A', 0.6, 0.95, 0.5)
     me = bpy.data.meshes.new('Ground'); bm = bmesh.new(); bmesh.ops.create_circle(bm, cap_ends=True, radius=120, segments=64)
@@ -590,6 +593,8 @@ def build_forest(o, assets):
         x, y = rnd.uniform(-12, 12), rnd.uniform(-10, 45)
         if path_clear(x, y): continue
         ellipsoid('Shroom', (x, y, 0.15), (0.12, 0.12, 0.06), shroom, seg=12)
+    L = bpy.data.lights.new('ForestFill', 'AREA'); L.energy = 3000; L.size = 30; L.color = (0.75, 0.9, 1.0)
+    lo = link(bpy.data.objects.new('ForestFill', L)); lo.location = (0, 5, 18)
     make_grass('ForestGrass', 0, 6, 9, 14, o.get('ngrass', 180000), seed=4, hmin=0.06, hmax=0.2)
     # orbs: 7 colours bobbing between the trees (+ the golden one, handled as a prop)
     cols = ['#FF3B30', '#FF9500', '#FFE620', '#34C759', '#2F7BFF', '#5E3BFF', '#C04BFF']
@@ -598,7 +603,8 @@ def build_forest(o, assets):
         c = cols[i % 7]
         x, y = rnd.uniform(-12, 12), rnd.uniform(-6, 40)
         z = rnd.uniform(1.2, 4.5)
-        ob = uv_sphere(f'Orb{i}', rnd.uniform(0.10, 0.16), 24, 12, emission_mat(f'OrbM{i%7}', srgb(c), 12.0))
+        ob = uv_sphere(f'Orb{i}', rnd.uniform(0.10, 0.16), 24, 12, emission_mat(f'OrbM{i%7}', srgb(c), 3.5))
+        halo = uv_sphere(f'OrbH{i}', ob.dimensions.x * 1.25, 24, 12, holo_like(f'OrbHM{i%7}', c, 2.0)); halo.parent = ob
         ob.location = (x, y, z)
         if i % 3 == 0:
             ld = bpy.data.lights.new(f'OrbL{i}', 'POINT'); ld.energy = 25; ld.color = srgb(c)[:3]; ld.shadow_soft_size = 0.15
@@ -626,13 +632,13 @@ def build_space(o, assets):
     # Earth: procedural continents + clouds + atmosphere rim
     er = o.get('earth_r', 60.0)
     em = bpy.data.materials.new('Earth'); em.use_nodes = True; nt = em.node_tree; b = nt.nodes['Principled BSDF']
-    tcn = node(nt, 'ShaderNodeTexCoord'); n = node(nt, 'ShaderNodeTexNoise'); n.inputs['Scale'].default_value = 2.2; n.inputs['Detail'].default_value = 8
+    tcn = node(nt, 'ShaderNodeTexCoord'); n = node(nt, 'ShaderNodeTexNoise'); n.inputs['Scale'].default_value = 2.2 / er; n.inputs['Detail'].default_value = 8
     nt.links.new(tcn.outputs['Object'], n.inputs['Vector'])
     cr = node(nt, 'ShaderNodeValToRGB'); E = cr.color_ramp.elements
     E[0].position = 0.52; E[0].color = srgb('#123E8C'); E[1].position = 0.55; E[1].color = srgb('#3E7A34')
     E.new(0.62).color = srgb('#8A7A4A'); E.new(0.7).color = srgb('#5E8A3E')
     nt.links.new(n.outputs['Fac'], cr.inputs['Fac'])
-    cl = node(nt, 'ShaderNodeTexNoise'); cl.inputs['Scale'].default_value = 4.0; cl.inputs['Detail'].default_value = 6; cl.inputs['Distortion'].default_value = 1.5
+    cl = node(nt, 'ShaderNodeTexNoise'); cl.inputs['Scale'].default_value = 5.0 / er; cl.inputs['Detail'].default_value = 6; cl.inputs['Distortion'].default_value = 1.5
     nt.links.new(tcn.outputs['Object'], cl.inputs['Vector'])
     cr2 = node(nt, 'ShaderNodeValToRGB'); cr2.color_ramp.elements[0].position = 0.55; cr2.color_ramp.elements[1].position = 0.72
     nt.links.new(cl.outputs['Fac'], cr2.inputs['Fac'])
@@ -664,7 +670,7 @@ def holo_like(name, col, strength):
 def build_pbhome(o, assets):
     world(None, 0.3, color=srgb('#FFE6C8'))
     wall = noise_mat('PBWall', '#F6D9E6', '#EEC8DA', 1.0, 0.9)
-    floor = wood_mat('PBFloor', '#8A5A3A', '#B07A52')
+    floor = noise_mat('PBFloor', '#9A6A48', '#B88A62', 3, 0.6, 0.1)
     box('PBFloorB', (0, 0, -0.05), (12, 12, 0.1), floor)
     box('PBBack', (0, 3.5, 2.5), (12, 0.2, 5), wall)
     box('PBLeft', (-4.5, 0, 2.5), (0.2, 12, 5), wall)

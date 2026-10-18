@@ -10,7 +10,7 @@ EYE_C = (0.165, -0.05, 0.952 - GROUND); EYE_R = 0.098
 # LOCKED CANON colours (refs/froggies_v2_locked_colors.jpg + LOCKED_CANON.md)
 CANON = {
     'JAMES':   dict(body='#4FA834', spot='#2F7A22', acc='bandana', acc_col='#D3232B'),   # green, red bandana
-    'JIMMY':   dict(body='#FFD21A', spot='#E8A90C', acc='jetpack', acc_col='#F2F3F5'),   # bright yellow, white jetpack
+    'JIMMY':   dict(body='#F9C700', spot='#E09A00', acc='jetpack', acc_col='#F2F3F5'),   # bright yellow, white jetpack
     'BUBBLES': dict(body='#1E5BD8', spot='#123C9C', acc='bandana', acc_col='#F4C20D'),   # true blue, yellow bandana
     'REXY':    dict(body='#F27A12', spot='#C2550A', acc='bandana', acc_col='#1F55C9'),   # orange, blue bandana
 }
@@ -231,7 +231,8 @@ class Froggy:
         h = cap_shell(self.name + '_Helmet', 0.375, 118, 0.006, False, g, col)
         h.parent = self.E['head']; h.location = (0, -0.025, 0.775 + S)
         ring = principled('SuitRing', srgb('#B9BEC4'), rough=0.3, metal=0.8)
-        r = cyl(self.name + '_Collar', (0, -0.02, 0.60 + S), 0.335, 0.05, ring, c=col)
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.33, minor_radius=0.03, major_segments=64, minor_segments=12, location=(0, -0.025, 0.585 + S))
+        r = bpy.context.active_object; r.name = self.name + '_Collar'; r.data.materials.append(ring); smooth_obj(r)
         r.parent = self.E['chest']
         self.helmet = h
 
@@ -273,3 +274,56 @@ class Froggy:
             for fl in self.flames:
                 fl.hide_render = thrust <= 0.01
                 fl.scale = (1, 1, -max(0.2, thrust))
+
+
+class Bear:
+    """Purple Bear (she) for the phone video-call shots."""
+    def __init__(self, col=None):
+        self.name = 'PURPLE_BEAR'
+        m = principled('BearFur', srgb('#9B6FD6'), rough=0.75, sss=0.15, sss_scale=0.03, spec=0.3)
+        nt = m.node_tree; b = nt.nodes['Principled BSDF']; b.inputs['Sheen Weight'].default_value = 0.6
+        b.inputs['Sheen Tint'].default_value = srgb('#E8D8FF')
+        A = lambda n, y: node(nt, 'ShaderNodeAttribute', (-900, y), attribute_name=n)
+        mz, bl, mi = A('muzzle', 0), A('belly', -200), A('mouthin', -400)
+        rest = A('rest', 200)
+        nz = node(nt, 'ShaderNodeTexNoise', (-900, 400)); nz.inputs['Scale'].default_value = 60; nz.inputs['Detail'].default_value = 3
+        nt.links.new(rest.outputs['Vector'], nz.inputs['Vector'])
+        bp = node(nt, 'ShaderNodeBump', (-200, -600)); bp.inputs['Strength'].default_value = 0.25; bp.inputs['Distance'].default_value = 0.004
+        nt.links.new(nz.outputs['Fac'], bp.inputs['Height']); nt.links.new(bp.outputs['Normal'], b.inputs['Normal'])
+        c1 = node(nt, 'ShaderNodeMix', (-500, 100), data_type='RGBA'); c1.inputs['A'].default_value = srgb('#9B6FD6'); c1.inputs['B'].default_value = srgb('#E9DAF7')
+        mx = node(nt, 'ShaderNodeMath', (-700, 0), operation='MAXIMUM'); nt.links.new(mz.outputs['Fac'], mx.inputs[0]); nt.links.new(bl.outputs['Fac'], mx.inputs[1])
+        nt.links.new(mx.outputs[0], c1.inputs['Factor'])
+        c2 = node(nt, 'ShaderNodeMix', (-300, 100), data_type='RGBA'); c2.inputs['B'].default_value = srgb('#5A1E2E')
+        nt.links.new(c1.outputs['Result'], c2.inputs['A']); nt.links.new(mi.outputs['Fac'], c2.inputs['Factor'])
+        nt.links.new(c2.outputs['Result'], b.inputs['Base Color'])
+        self.skin = m
+        self.root = link(bpy.data.objects.new('PB_Root', None), col)
+        self.body = link(bpy.data.objects.new('PB_Body', bpy.data.meshes.new('pbtmp')), col); self.body.parent = self.root
+        self.E = {'head': link(bpy.data.objects.new('PB_head', None), col)}; self.E['head'].parent = self.root
+        eye = principled('BearEye', srgb('#140C1C'), rough=0.08, coat=1.0, coat_r=0.02)
+        self.eyes = {}
+        for k, s in (('L', 1), ('R', -1)):
+            e = ellipsoid('PB_Eye' + k, (s * 0.105, -0.262, 1.13), (0.034, 0.026, 0.042), eye, c=col); e.parent = self.E['head']
+            hl = ellipsoid('PB_EyeHL' + k, (s * 0.105 + 0.012, -0.285, 1.145), (0.008, 0.004, 0.008), emission_mat('HL', (1, 1, 1, 1), 3.0), c=col); hl.parent = e
+            self.eyes[k] = e
+            lash = cyl('PB_Lash' + k, (s * 0.128, -0.262, 1.168), 0.004, 0.035, eye, rot=(0, math.radians(-s * 55), 0), c=col); lash.parent = self.E['head']
+        nose = ellipsoid('PB_Nose', (0, -0.345, 1.04), (0.045, 0.032, 0.03), principled('BearNose', srgb('#3A1E4A'), rough=0.2, coat=0.6), c=col)
+        nose.parent = self.E['head']
+        bow = principled('Bow', srgb('#FF6FAE'), rough=0.5, sheen=None) if False else principled('Bow', srgb('#FF6FAE'), rough=0.5)
+        for s in (-1, 1):
+            w = ellipsoid('PB_Bow', (-0.21 + s * 0.06, -0.02, 1.43), (0.06, 0.025, 0.04), bow, rot=(0, s * 0.3, 0), c=col); w.parent = self.E['head']
+        k = ellipsoid('PB_BowK', (-0.21, -0.03, 1.43), (0.022, 0.022, 0.022), bow, c=col); k.parent = self.E['head']
+        self.acc = {}
+
+    def set_frame(self, npz_path, rootM, face, gaze_world, thrust=0.0):
+        D = np.load(npz_path)
+        old = self.body.data
+        me = mesh_np('PB_BodyMesh', D['verts'], D['faces'], self.skin, obj=False)
+        for k in ('rest', 'muzzle', 'belly', 'mouthin'):
+            add_attr(me, k, D[k])
+        self.body.data = me
+        if old.users == 0: bpy.data.meshes.remove(old)
+        self.root.matrix_world = rootM
+        self.E['head'].matrix_basis = np_to_matrix(D['G_head'])
+        bl = float(face.get('blink', 0))
+        for e in self.eyes.values(): e.scale = (0.034, 0.026, 0.042 * max(0.08, 1 - bl))

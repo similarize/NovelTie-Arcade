@@ -23,7 +23,7 @@ T_SETUP = time.time()
 SET = bsets.build(SHOT['set'], SHOT.get('set_opts', {}), ASSETS)
 chars = {}
 for name, C in SHOT['chars'].items():
-    chars[name] = bchar.Froggy(name, suit=C.get('suit', False))
+    chars[name] = bchar.Bear() if name == 'PURPLE_BEAR' else bchar.Froggy(name, suit=C.get('suit', False))
 PROPS = bprops.build(SHOT.get('props', {}), ASSETS, chars)
 
 # ---------------------------------------------------------------- camera
@@ -56,7 +56,7 @@ scn.cycles.use_auto_tile = False
 scn.cycles.seed = 0; scn.cycles.use_animated_seed = False
 scn.render.use_persistent_data = True
 scn.view_settings.view_transform = 'AgX'
-scn.view_settings.look = R.get('look', 'AgX - Medium High Contrast')
+scn.view_settings.look = R.get('look', 'AgX - Punchy')
 scn.view_settings.exposure = float(R.get('exposure', 0.0))
 scn.render.film_transparent = False
 scn.render.image_settings.file_format = 'PNG'; scn.render.image_settings.color_depth = '8'
@@ -83,7 +83,7 @@ for fr in frames:
     for name, C in SHOT['chars'].items():
         ch = chars[name]
         vis = C.get('visible', [1] * N)[i]
-        objs = [ch.body, *ch.eyes.values(), *ch.acc.values()] + [c for e in ch.E.values() for c in e.children_recursive]
+        objs = [ch.body, *ch.acc.values()] + [c for e in ch.E.values() for c in e.children_recursive]
         for ob in set(objs): ob.hide_render = not vis
         if not vis: continue
         ch.set_frame(os.path.join(MESH, f'{name}_{fr:04d}.npz'), M_root(C['root'][i]), C['face'][i], C['gaze'][i],
