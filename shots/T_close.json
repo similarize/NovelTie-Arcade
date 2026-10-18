@@ -1,0 +1,1 @@
+{"id": "T_close", "scene": 0, "set": "ranch", "frames": 1, "set_opts": {}, "render": {"samples": 32, "vox": 0.003}, "camera": {"pos": [[0.3, -2.6, 1.25]], "tgt": [[0, 0, 1.1]], "lens": [55], "focus": [2.6], "fstop": 2.8}, "chars": {"JIMMY": {"root": [[0, 0, 0, 0]], "pose": [{}], "face": [{"smile": 0.7, "J": 0.035, "U": 0.014}], "gaze": [[0.3, -2.6, 1.25]]}}, "props": {}}

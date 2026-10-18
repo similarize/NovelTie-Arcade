@@ -1,0 +1,55 @@
+name: froggies-render
+on:
+  push:
+    branches: [froggies-render-farm]
+    paths: ['job.json']
+  workflow_dispatch:
+concurrency:
+  group: froggies-render
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: python3 src/farm_plan.py >> $GITHUB_OUTPUT
+  render:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: cache blender + hdri
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/blender
+            ~/assets
+          key: blender-4.3.2-assets-v1
+      - name: fetch blender + hdri (CC0, Poly Haven)
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/blender ~/assets
+          curl -sSL https://download.blender.org/release/Blender4.3/blender-4.3.2-linux-x64.tar.xz | tar xJ -C ~/blender --strip-components=1
+          for h in qwantani_morning_puresky qwantani_mid_morning_puresky; do
+            curl -sSL -o ~/assets/${h}_4k.hdr https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/4k/${h}_4k.hdr; done
+      - name: deps
+        run: |
+          sudo apt-get install -y -q libxi6 libxkbcommon0 libxrender1 libxxf86vm1 libxfixes3 libgl1 libsm6 libegl1 > /dev/null
+          pip install -q numpy scipy scikit-image
+      - name: render
+        run: python3 src/farm_run.py '${{ matrix.tasks }}' ~/blender/blender ~/assets $GITHUB_WORKSPACE/out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frames-${{ matrix.id }}
+          path: out/
+          retention-days: 3
+          compression-level: 0

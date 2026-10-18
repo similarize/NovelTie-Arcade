@@ -1,0 +1,30 @@
+{
+ "tasks": [
+  {
+   "shot": "T_lineup",
+   "frames": "1"
+  },
+  {
+   "shot": "T_close",
+   "frames": "1"
+  },
+  {
+   "shot": "T_estab",
+   "frames": "1"
+  },
+  {
+   "shot": "T_forest",
+   "frames": "1"
+  },
+  {
+   "shot": "T_space",
+   "frames": "1"
+  },
+  {
+   "shot": "T_pb",
+   "frames": "1"
+  }
+ ],
+ "chunks": 6,
+ "tag": "look test 1"
+}

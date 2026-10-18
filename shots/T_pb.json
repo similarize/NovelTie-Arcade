@@ -1,0 +1,1 @@
+{"id": "T_pb", "scene": 0, "set": "pbhome", "frames": 1, "set_opts": {}, "render": {"samples": 24, "vox": 0.005}, "camera": {"pos": [[0, -5, 1.5]], "tgt": [[0, 2, 1.2]], "lens": [35], "focus": [5], "fstop": 4.0}, "chars": {}, "props": {}}
