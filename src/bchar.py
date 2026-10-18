@@ -203,7 +203,7 @@ class Froggy:
         # flames (hidden unless thrusting): emissive cones under the nozzles
         self.flames = []
         fm = bpy.data.materials.new('Flame'); fm.use_nodes = True; nt = fm.node_tree; nt.nodes.clear()
-        em = node(nt, 'ShaderNodeEmission'); em.inputs['Color'].default_value = srgb('#FFB040'); em.inputs['Strength'].default_value = 25
+        em = node(nt, 'ShaderNodeEmission'); em.inputs['Color'].default_value = srgb('#FF8A1E'); em.inputs['Strength'].default_value = 9
         tr = node(nt, 'ShaderNodeBsdfTransparent'); lw = node(nt, 'ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.5
         mx = node(nt, 'ShaderNodeMixShader'); nt.links.new(lw.outputs['Facing'], mx.inputs[0]); nt.links.new(em.outputs[0], mx.inputs[1]); nt.links.new(tr.outputs[0], mx.inputs[2])
         o = node(nt, 'ShaderNodeOutputMaterial'); nt.links.new(mx.outputs[0], o.inputs[0])
@@ -213,6 +213,9 @@ class Froggy:
             # cone points down: radius1 at bottom -> flip by scaling z
             fl.scale = (1, 1, -1)
             fl.hide_render = True; self.flames.append(fl); parts.append(fl)
+        fld = bpy.data.lights.new(self.name + 'FlameL', 'POINT'); fld.energy = 0; fld.color = (1.0, 0.6, 0.25); fld.shadow_soft_size = 0.1
+        self.flame_light = link(bpy.data.objects.new(self.name + 'FlameL', fld), col); self.flame_light.location = (0, 0.27, 0.05 + S)
+        parts.append(self.flame_light)
         for p in parts:
             p.parent = J; p.matrix_parent_inverse = Matrix.Identity(4)
         self.jet_parts = parts

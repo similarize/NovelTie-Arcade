@@ -563,7 +563,7 @@ def build_ranch(o, assets):
 
 
 def build_forest(o, assets):
-    sun = world(find_hdri(assets, o.get('hdri', 'qwantani_morning_puresky')), o.get('env', 0.75), o.get('hdri_rot', 0),
+    sun = world(find_hdri(assets, o.get('hdri', 'qwantani_morning_puresky')), o.get('env', 1.4), o.get('hdri_rot', 0),
                 sun=dict(energy=o.get('sun', 1.6), elev_from_zenith=50, azim=-30, color=(1.0, 0.85, 0.65)))
     moss = noise_mat('ForestFloor', '#2E4A1C', '#4F6A2A', 0.6, 0.95, 0.5)
     me = bpy.data.meshes.new('Ground'); bm = bmesh.new(); bmesh.ops.create_circle(bm, cap_ends=True, radius=120, segments=64)
@@ -582,13 +582,23 @@ def build_forest(o, assets):
         for j in range(3):
             b = blob_mesh('FCanopy', rnd.uniform(4, 6.5), i * 3 + j, 2, 0.25, canopy)
             b.location = (x + rnd.uniform(-3, 3), y + rnd.uniform(-3, 3), h + rnd.uniform(-1, 3))
-    wallm = noise_mat('ForestWall', '#16301A', '#2C4A26', 0.08, 0.95)
+    wallm = noise_mat('ForestWall', '#1E3A26', '#3A5E36', 0.3, 0.95)
     wallm.node_tree.nodes['Principled BSDF'].inputs['Emission Color'].default_value = srgb('#2A4A30')
-    wallm.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 0.35
+    wallm.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 1.2
     wm = bpy.data.meshes.new('ForestWall'); bm = bmesh.new()
     bmesh.ops.create_cone(bm, cap_ends=False, segments=64, radius1=70, radius2=70, depth=30)
     bm.to_mesh(wm); bm.free()
     w = link(bpy.data.objects.new('ForestWall', wm)); w.location = (0, 25, 15); wm.materials.append(wallm); smooth_obj(w)
+    farbark = noise_mat('FarBark', '#1A2416', '#2E3A24', 3, 0.95)
+    for k in range(220):
+        ang = rnd.uniform(0, 6.283); rr = rnd.uniform(40, 66)
+        x, y = rr * math.cos(ang), 25 + rr * math.sin(ang)
+        h = rnd.uniform(18, 30); r = rnd.uniform(0.5, 1.4)
+        cyl('FarTrunk', (x, y, h / 2), r, h, farbark, r2=r * 0.7, seg=10)
+    for k in range(70):
+        ang = rnd.uniform(0, 6.283); rr = rnd.uniform(40, 62)
+        b = blob_mesh('FarCanopy', rnd.uniform(5, 8), 900 + k, 2, 0.25, canopy)
+        b.location = (rr * math.cos(ang), 25 + rr * math.sin(ang), rnd.uniform(16, 24))
     # ferns / bushes / mushrooms + grass
     fern = leaf_mat('Fern', '#2F5E1E', '#5E8E34')
     for i in range(160):
@@ -602,6 +612,12 @@ def build_forest(o, assets):
         ellipsoid('Shroom', (x, y, 0.15), (0.12, 0.12, 0.06), shroom, seg=12)
     L = bpy.data.lights.new('ForestFill', 'AREA'); L.energy = 9000; L.size = 40; L.color = (0.75, 0.9, 1.0)
     lo = link(bpy.data.objects.new('ForestFill', L)); lo.location = (0, 5, 18)
+    for k, (x, y) in enumerate([(-4, 0), (4, 10), (-3, 18), (3, 28), (0, -8)]):
+        L2 = bpy.data.lights.new(f'UnderFill{k}', 'AREA'); L2.energy = 2500; L2.size = 8; L2.color = (0.85, 1.0, 0.8)
+        lo2 = link(bpy.data.objects.new(f'UnderFill{k}', L2)); lo2.location = (x, y, 9)
+    L3 = bpy.data.lights.new('ForestKey', 'SUN'); L3.energy = 2.0; L3.color = (1.0, 0.9, 0.7); L3.angle = 0.05
+    k3 = link(bpy.data.objects.new('ForestKey', L3)); k3.rotation_euler = (math.radians(35), 0, math.radians(200))
+    k3.visible_shadow = True
     make_grass('ForestGrass', 0, 6, 9, 14, o.get('ngrass', 180000), seed=4, hmin=0.06, hmax=0.2)
     # orbs: 7 colours bobbing between the trees (+ the golden one, handled as a prop)
     cols = ['#FF3B30', '#FF9500', '#FFE620', '#34C759', '#2F7BFF', '#5E3BFF', '#C04BFF']

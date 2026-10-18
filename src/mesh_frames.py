@@ -59,7 +59,7 @@ def main():
         for name, C in shot['chars'].items():
             i = fr - 1
             if not C.get('visible', [1] * shot['frames'])[i]: continue
-            vox = float(C.get('vox', vox_default))
+            vox = float(os.environ.get('VOX_OVERRIDE') or C.get('vox', vox_default))
             if name == 'PURPLE_BEAR':
                 F = dict(C['face'][i]); F['head'] = C['pose'][i].get('head', (0, 0, 0)); F['J'] = float(F.get('J', 0)) * 0.45
                 v, f, A, Gh = mbear.build(F, vox)

@@ -68,7 +68,7 @@ def make_sps(name='SPS'):
     parts['blip'] = blip
     # projector cone (light beam from the phone)
     cone = cyl(name + 'Beam', (0, 0, -0.10), 0.02, 0.2, holo_material(name + 'BeamM', '#5FD6FF', 1.2, 0.15), r2=0.24, smooth=False)
-    cone.rotation_euler = (math.pi, 0, 0); cone.parent = root
+    cone.parent = root
     parts['beam'] = cone
     root['parts'] = list(p.name for p in parts.values())
     return root, parts
@@ -101,6 +101,7 @@ def update(P, spec, i, chars):
         loc = S.get('pos', [[0, 0, 0]])[min(i, len(S.get('pos', [[0, 0, 0]])) - 1)]
         rot = S.get('rot', [[0, 0, 0]])[min(i, len(S.get('rot', [[0, 0, 0]])) - 1)]
         sc = S.get('scale', [1.0])[min(i, len(S.get('scale', [1.0])) - 1)]
+        if isinstance(sc, (list, tuple)): sc = sc[0]
         L = Matrix.Translation(loc) @ Matrix.Rotation(math.radians(rot[2]), 4, 'Z') @ Matrix.Rotation(math.radians(rot[1]), 4, 'Y') @ \
             Matrix.Rotation(math.radians(rot[0]), 4, 'X') @ Matrix.Diagonal((sc, sc, sc, 1))
         if att:

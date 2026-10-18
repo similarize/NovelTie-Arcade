@@ -17,5 +17,7 @@ for t in tasks.split(';'):
     for line in r.stdout.splitlines():
         if any(k in line for k in ('RENDERED', 'Error', 'Traceback', 'rror:', 'ALLDONE', 'SETUP')): print(line, flush=True)
     if r.returncode: print(r.stdout[-3000:], r.stderr[-3000:])
+    if meshp.poll() is None: meshp.kill()
     meshp.wait()
+    for f in os.listdir(md): os.remove(os.path.join(md, f))
     print('SHOT', shot, 'frames', len(frames.split(',')), 'sec', round(time.time() - t0), flush=True)

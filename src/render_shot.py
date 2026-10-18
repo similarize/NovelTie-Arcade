@@ -72,13 +72,7 @@ def M_root(r):
     return Matrix.Translation((x, y, z)) @ Matrix.Rotation(math.radians(yaw), 4, 'Z')
 
 
-print('SETUP', SHOT['id'], round(time.time() - T_SETUP, 1), flush=True)
-t_all = time.time()
-for fr in frames:
-    if opt('--wait'):
-        okf = os.path.join(MESH, f'{fr:04d}.ok')
-        while not os.path.exists(okf): time.sleep(0.3)
-    t0 = time.time(); i = fr - 1
+def render_frame(fr, i):
     scn.frame_set(fr)
     for name, C in SHOT['chars'].items():
         ch = chars[name]
@@ -89,7 +83,9 @@ for fr in frames:
         ch.set_frame(os.path.join(MESH, f'{name}_{fr:04d}.npz'), M_root(C['root'][i]), C['face'][i], C['gaze'][i],
                      C.get('thrust', [0] * N)[i])
         if hasattr(ch, 'flames'):
-            for fl in ch.flames: fl.hide_render = (not vis) or C.get('thrust', [0] * N)[i] <= 0.01
+            th = C.get('thrust', [0] * N)[i]
+            for fl in ch.flames: fl.hide_render = (not vis) or th <= 0.01
+            if hasattr(ch, 'flame_light'): ch.flame_light.data.energy = 400 * th if vis else 0
     bprops.update(PROPS, SHOT.get('props', {}), i, chars)
     bsets.update(SET, SHOT.get('set_opts', {}), i, fr)
     p, t = CAM['pos'][i], CAM['tgt'][i]
@@ -104,10 +100,24 @@ for fr in frames:
     if opt('--save') and fr == frames[0]:
         bpy.ops.wm.save_as_mainfile(filepath=opt('--save'))
     bpy.ops.render.render(write_still=True)
-    print('RENDERED', SHOT['id'], fr, round(time.time() - t0, 1), flush=True)
+
+
+print('SETUP', SHOT['id'], round(time.time() - T_SETUP, 1), flush=True)
+t_all = time.time()
+for fr in frames:
+    okf = os.path.join(MESH, f'{fr:04d}.ok')
+    if opt('--wait'):
+        tw = time.time()
+        while not os.path.exists(okf) and time.time() - tw < 900: time.sleep(0.3)
+    t0 = time.time(); i = fr - 1
+    try:
+        render_frame(fr, i)
+        print('RENDERED', SHOT['id'], fr, round(time.time() - t0, 1), flush=True)
+    except Exception:
+        import traceback; traceback.print_exc(); print('Error: frame failed', fr, flush=True)
     if opt('--wait'):
         for name in SHOT['chars']:
             p_ = os.path.join(MESH, f'{name}_{fr:04d}.npz')
             if os.path.exists(p_): os.remove(p_)
-        os.remove(okf)
+        if os.path.exists(okf): os.remove(okf)
 print('ALLDONE', round(time.time() - t_all, 1))
