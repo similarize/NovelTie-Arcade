@@ -10,50 +10,134 @@
 <link rel="manifest" href="manifest.json?v=3" />
 <link rel="apple-touch-icon" href="lobby-assets/apple-touch-icon.png">
 <meta name="theme-color" content="#0b3d2e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%,#1d6b4f 0%,#0b3d2e 55%,#072a20 100%);color:#f5f0e1;font-family:system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;padding:36px 18px}
-header{text-align:center;margin-bottom:26px}
-h1{margin:0 0 6px;font-size:34px;letter-spacing:.5px;color:#f5c542;text-shadow:0 2px 18px rgba(245,197,66,.35)}
-header p{margin:0;opacity:.8;font-size:15px}
-.games{display:grid;gap:18px;width:100%;max-width:460px}
-.game{display:block;background:rgba(255,255,255,.07);border:1px solid rgba(245,197,66,.28);border-radius:18px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 10px 30px rgba(0,0,0,.28);transition:transform .15s,box-shadow .15s}
-.game:hover,.game:focus-visible{transform:translateY(-3px);box-shadow:0 16px 36px rgba(0,0,0,.38);outline:none;border-color:#f5c542}
-.game .art{display:block;width:100%;aspect-ratio:5/3;object-fit:cover;object-position:top;background:#0a3327}
-.game .row{display:flex;align-items:center;gap:12px;padding:12px 14px}
-.game .row img{width:44px;height:44px;border-radius:10px;flex:none}
-.game .t{flex:1}
-.game .t b{display:block;font-size:18px;color:#fff}
-.game .t span{font-size:13px;opacity:.75}
-.tags{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 14px}
-.tags i{font-style:normal;font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(245,197,66,.14);color:#f5d77a}
-.game .go{font-size:15px;font-weight:700;color:#3a2a00;background:#f5c542;border-radius:999px;padding:7px 14px}
+body{margin:0;min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%,#1d6b4f 0%,#0b3d2e 55%,#072a20 100%);color:#f5f0e1;font-family:Inter,system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;padding:34px 16px 24px}
+header{text-align:center;margin-bottom:24px;max-width:640px}
+h1{margin:0 0 8px;font-family:Fraunces,Georgia,serif;font-weight:800;font-size:38px;letter-spacing:.3px;color:#f5c542;text-shadow:0 2px 18px rgba(245,197,66,.35)}
+header p{margin:0;opacity:.85;font-size:16px;line-height:1.45}
+.legend{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:14px;font-size:12.5px}
+.games{display:grid;gap:20px;width:100%;max-width:1080px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.game{display:flex;flex-direction:column;background:#10372b;border:1px solid rgba(245,197,66,.25);border-radius:20px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 12px 32px rgba(0,0,0,.32);transition:transform .18s,box-shadow .18s,border-color .18s}
+.game:hover,.game:focus-visible{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.42);outline:none;border-color:#f5c542}
+.scene{position:relative;height:190px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.title{display:flex;align-items:center;gap:12px}
+.title img{width:42px;height:42px;border-radius:10px;flex:none}
+.title b{font-family:Fraunces,Georgia,serif;font-size:23px;font-weight:800;color:#fff;line-height:1.1}
+.hook{font-size:15.5px;line-height:1.4;color:#f5f0e1;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.facts i{font-style:normal;font-size:12px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:#e9e2cc}
+.foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px}
+.note{font-size:12px;opacity:.6;line-height:1.3}
+.go{flex:none;font-size:15px;font-weight:700;color:#3a2a00;background:#f5c542;border-radius:999px;padding:9px 20px;transition:background .15s}
+.game:hover .note{font-size:12px;opacity:.6;line-height:1.3}
+.go{flex:none;background:#ffd75e}
+.badge{font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;line-height:1.2;display:inline-flex;align-items:center;gap:5px}
+.b-learn{background:rgba(120,190,255,.14);color:#bfe0ff;border:1px solid rgba(120,190,255,.3)}
+.b-help{background:rgba(245,197,66,.16);color:#ffd970;border:1px solid rgba(245,197,66,.45)}
+.scene .badge{position:absolute;top:12px;left:12px;z-index:2;backdrop-filter:blur(4px);background:rgba(10,30,24,.78)}
+.scene .badge.b-help{color:#ffd970}
+.b-soon{background:rgba(255,255,255,.06);color:#d9d2bd;border:1px dashed rgba(255,255,255,.28)}
+
+/* Word Match scene */
+.s-wm{background:radial-gradient(circle at 50% 40%,#1bb85b,#0f8a42 70%)}
+.card{position:absolute;width:78px;height:108px;border-radius:9px;background:#fff;color:#14324a;box-shadow:0 6px 14px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:12.5px;letter-spacing:.3px;padding:6px;transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
+.card.back{background:repeating-linear-gradient(45deg,#3f8ef0 0 9px,#5aa2f5 9px 18px);border:4px solid #fff}
+.card.crown{border:3px solid #e6b422;background:linear-gradient(#fffdf3,#fff4cc);flex-direction:column;gap:4px}
+.card.crown span{font-size:20px}
+.card.half{width:64px;height:88px;font-size:12px;background:#fff8e6;border:2px dashed #e6b422}
+.c1{transform:translate(-118px,8px) rotate(-12deg)}
+.c2{transform:translate(-44px,-6px) rotate(-4deg)}
+.c3{transform:translate(34px,-2px) rotate(5deg)}
+.c4{transform:translate(110px,12px) rotate(12deg)}
+.game:hover .c1{transform:translate(-128px,2px) rotate(-16deg)}
+.game:hover .c4{transform:translate(120px,4px) rotate(16deg)}
+.game:hover .c2{transform:translate(-48px,-14px) rotate(-6deg)}
+.game:hover .c3{transform:translate(38px,-10px) rotate(7deg)}
+.plus{position:absolute;bottom:14px;right:16px;background:rgba(0,0,0,.28);color:#fff;font-size:12px;padding:4px 9px;border-radius:999px}
+
+/* Rootline scene */
+.s-rl{background:linear-gradient(180deg,#2a1d12,#1a120b);flex-direction:column;gap:0;padding:26px 16px 0}
+.layer{width:100%;max-width:300px;display:flex;align-items:baseline;justify-content:space-between;padding:7px 14px;font-family:Fraunces,Georgia,serif}
+.layer small{font-family:Inter,sans-serif;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;opacity:.7}
+.layer b{font-size:19px}
+.l1{background:#efe2c4;color:#3a2a15;border-radius:10px 10px 0 0}
+.l2{background:#b98a52;color:#2a1a08}
+.l3{background:#7c5631;color:#f3e2c6}
+.l4{background:#4a321c;color:#f3e2c6;border-radius:0 0 10px 10px}
+.l4 b{color:#f5c542}
+.game:hover .l4{box-shadow:0 0 24px rgba(245,197,66,.45)}
+
+/* Line upon Line scene */
+.s-lul{background:linear-gradient(180deg,#fbf3e2,#efe0bf);color:#5b3f12;padding:0 24px 18px;flex-direction:column}
+.s-lul q{font-family:Fraunces,Georgia,serif;font-size:21px;line-height:1.3;text-align:center;quotes:"\201C" "\201D"}
+.s-lul .ref{margin-top:8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#8a6a35}
+.s-lul .chips{position:absolute;bottom:12px;display:flex;gap:6px}
+.s-lul .chips span{background:#fff;border:1px solid #e3cf9f;border-radius:999px;font-size:11px;padding:3px 9px;color:#6b4c1a}
+
 #installBtn{margin-top:26px;background:#f5c542;color:#3a2a00;font-weight:700;border:none;padding:14px 28px;border-radius:14px;font-size:16px;cursor:pointer}
 #installBtn[hidden]{display:none}
-footer{margin-top:auto;padding-top:32px;font-size:12px;opacity:.55;text-align:center}
+footer{margin-top:auto;padding-top:30px;font-size:12px;opacity:.55;text-align:center}
+@media (prefers-reduced-motion:reduce){.game,.card{transition:none}}
 </style>
 </head>
 <body>
 <header>
 <h1>NovelTie Arcade</h1>
-<p>Family word &amp; puzzle games. Free, kid-friendly, play together.</p>
+<p>Hard, clever games about words, roots and scripture. Five minutes a round, and you'll leave knowing something new.</p>
+<div class="legend"><span class="badge b-learn">🎓 Learn for yourself</span><span class="badge b-help">🤝 Your play helps Similarize</span></div>
 </header>
 <div class="games">
+
 <a class="game" href="https://games.noveltie.com/solitaire-word-match/">
-<img class="art" src="lobby-assets/card-swm.jpg?v=3" alt="" loading="lazy">
-<span class="row"><img src="https://games.noveltie.com/solitaire-word-match/assets/icon-192.png" alt=""><span class="t"><b>Solitaire Word Match</b><span>Word-association solitaire &middot; 30 levels</span></span><span class="go">Play</span></span>
-<span class="tags"><i>1&ndash;2 players</i><i>Pass the phone</i><i>Saves progress</i></span>
+<div class="scene s-wm" aria-hidden="true"><span class="badge b-learn">🎓 Just for fun &amp; learning</span>
+<div class="card back c1"></div>
+<div class="card c2">SATURN</div>
+<div class="card crown c3"><span>👑</span>PLANETS</div>
+<div class="card half c4">SEA +<br>BISCUIT</div>
+<div class="plus">Which pile does it belong to?</div>
+</div>
+<div class="body">
+<div class="title"><img src="https://games.noveltie.com/solitaire-word-match/assets/icon-192.png" alt=""><b>Solitaire Word Match</b></div>
+<p class="hook">Solitaire where the suits are secret. Sort every card into its hidden category before you run out of moves.</p>
+<div class="facts"><i>100 levels</i><i>Classic + Super Hard</i><i>No repeated words</i><i>1–2 players</i></div>
+<div class="foot"><span class="note">Learning game · doesn't feed Similarize</span><span class="go">Play</span></div>
+</div>
 </a>
+
 <a class="game" href="https://games.noveltie.com/rootline/">
-<img class="art" src="lobby-assets/card-rootline.jpg?v=3" alt="" loading="lazy">
-<span class="row"><img src="https://games.noveltie.com/rootline/assets/icon-192.png" alt=""><span class="t"><b>Rootline</b><span>Etymology dig &middot; 41 words &middot; Script Gates</span></span><span class="go">Play</span></span>
-<span class="tags"><i>Daily Dig</i><i>Hear words aloud</i><i>~3 min</i></span>
+<div class="scene s-rl" aria-hidden="true"><span class="badge b-learn">🎓 Learn · 🤝 Similarize soon</span>
+<div class="layer l1"><small>English</small><b>tooth</b></div>
+<div class="layer l2"><small>Old English</small><b>tōþ</b></div>
+<div class="layer l3"><small>Proto-Germanic</small><b>*tanþs</b></div>
+<div class="layer l4"><small>Root</small><b>*h₃dónts</b></div>
+</div>
+<div class="body">
+<div class="title"><img src="https://games.noveltie.com/rootline/assets/icon-192.png" alt=""><b>Rootline</b></div>
+<p class="hook">Dig a word down through the centuries to its oldest root, then unlock Greek, Cyrillic and Korean script gates.</p>
+<div class="facts"><i>Daily Dig</i><i>~3 min</i><i>Hear every layer</i><i>Hidden Weight track</i></div>
+<div class="foot"><span class="note">Hidden Weight picks will help Similarize soon</span><span class="go">Play</span></div>
+</div>
 </a>
+
 <a class="game" href="https://games.noveltie.com/line-upon-line/">
-<img class="art" src="lobby-assets/card-lineuponline.jpg?v=3" alt="" loading="lazy">
-<span class="row"><img src="https://games.noveltie.com/line-upon-line/assets/icon-192.png" alt=""><span class="t"><b>Line upon Line</b><span>Gospel learning &middot; Doctrine, history &amp; scripture mastery</span></span><span class="go">Play</span></span>
-<span class="tags"><i>Daily Five</i><i>2-player Family Duel</i><i>Listen aloud</i><i>Sourced quotes</i></span>
+<div class="scene s-lul" aria-hidden="true"><span class="badge b-learn">🎓 Learn for yourself</span>
+<q>line upon line, precept upon precept</q>
+<div class="ref">Doctrine and Covenants 98:12</div>
+<div class="chips"><span>Doctrine</span><span>History</span><span>Mastery</span></div>
+</div>
+<div class="body">
+<div class="title"><img src="https://games.noveltie.com/line-upon-line/assets/icon-192.png" alt=""><b>Line upon Line</b></div>
+<p class="hook">Gospel study that goes past the easy answer: doctrine, Church history and Doctrinal Mastery, with every quote sourced.</p>
+<div class="facts"><i>Daily Five</i><i>2-player Family Duel</i><i>Listen aloud</i></div>
+<div class="foot"><span class="note">Learning game · doesn't feed Similarize</span><span class="go">Play</span></div>
+</div>
 </a>
+
 </div>
 <button id="installBtn" hidden>Install Arcade app</button>
 <footer>Install games first, then the arcade, for separate home-screen icons.</footer>
