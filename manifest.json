@@ -1,5 +1,5 @@
 {
-  "background_color": "#0b3d2e",
+  "background_color": "#f2f1ed",
   "description": "A personal arcade of word and puzzle games.",
   "display": "standalone",
   "icons": [
@@ -26,5 +26,5 @@
   "scope": "/",
   "short_name": "Arcade",
   "start_url": "/",
-  "theme_color": "#0b3d2e"
+  "theme_color": "#f2f1ed"
 }
