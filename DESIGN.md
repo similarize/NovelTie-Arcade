@@ -5,3 +5,4 @@
 4. Type: Inter only (variable, opsz). Sizes: 13 / 15 / 17 / 22 / 28 / 40-56. Weights 400/500/600.
 5. Spacing scale 4-8-12-16-24-40-64. Radii: card 16, art inherits, icon 10, button pill. Borders 1px hairline, no shadows.
 6. Art: flat SVG, viewBox 400x300, deep game-specific bg, one lighter halo disc centered (family trait), motif in cream #F4EAD5 + one gold accent #F2C14E, no text, no gradients, centered within the disc.
+7. Compact variant (.g--row) for secondary games: the same card anatomy laid out as a full-width horizontal strip — art on the left (square 80px on phone, 16:10 at 176px on desktop, same SVG cropped centered), then icon + name + one line, Play on the right. Smaller type (15/13 phone, 17/15 desktop), 32/40px icon. Always spans the full grid width; never sits alone in a partial column.

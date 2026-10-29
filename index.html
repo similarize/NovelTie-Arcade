@@ -42,11 +42,10 @@ h2{margin:0;font-size:28px;font-weight:600;letter-spacing:-.025em;line-height:1.
 .lead{margin:var(--s2) 0 var(--s5);font-size:17px;color:var(--muted);max-width:46ch}
 .grid{display:grid;gap:var(--s4)}
 .featured .grid{grid-template-columns:1fr}
-.fun .grid{grid-template-columns:repeat(2,1fr)}
+.fun .grid{grid-template-columns:1fr}
 @media (min-width:760px){
   .grid{gap:var(--s5)}
   .featured .grid{grid-template-columns:1fr 1fr}
-  .fun .grid{grid-template-columns:repeat(3,1fr)}
 }
 
 /* The one card */
@@ -75,6 +74,24 @@ h2{margin:0;font-size:28px;font-weight:600;letter-spacing:-.025em;line-height:1.
   .g h3{font-size:15px}
   .g p{font-size:13px}
   .play{width:100%;text-align:center;font-size:13px;padding:var(--s2)}
+}
+
+/* Compact variant: same anatomy as a horizontal strip, for secondary games */
+.g.g--row{flex-direction:row;align-items:stretch}
+.g--row .art{aspect-ratio:1/1;width:80px;flex:none}
+.g.g--row .meta{flex:1;padding:var(--s3) var(--s4);gap:var(--s3);flex-wrap:nowrap;align-items:center}
+.g.g--row .meta img{width:32px;height:32px}
+.g.g--row h3{font-size:15px}
+.g.g--row p{font-size:13px}
+.g.g--row .play{width:auto;font-size:13px;padding:var(--s2) var(--s4)}
+.g--row .txt{flex-basis:auto}
+@media (min-width:760px){
+  .g--row .art{aspect-ratio:16/10;width:176px}
+  .g.g--row .meta{padding:var(--s4) var(--s5);gap:var(--s4)}
+  .g.g--row .meta img{width:40px;height:40px}
+  .g.g--row h3{font-size:17px}
+  .g.g--row p{font-size:15px}
+  .g.g--row .play{font-size:15px}
 }
 
 footer{border-top:1px solid var(--line);padding:var(--s5) 0 calc(var(--s6) + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3);font-size:13px;color:var(--muted)}
@@ -145,8 +162,8 @@ footer{border-top:1px solid var(--line);padding:var(--s5) 0 calc(var(--s6) + env
   <p class="lead">Good for your brain, just for you.</p>
   <div class="grid">
 
-    <a class="g" href="https://games.noveltie.com/solitaire-word-match/">
-      <span class="art" aria-hidden="true"><svg viewBox="0 0 400 250">
+    <a class="g g--row" href="https://games.noveltie.com/solitaire-word-match/">
+      <span class="art" aria-hidden="true"><svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice">
         <rect width="400" height="250" fill="#1f5a40"/>
         <circle cx="200" cy="125" r="96" fill="#2a6b4e"/>
         <g transform="rotate(-17 200 215)"><rect x="162" y="62" width="76" height="108" rx="9" fill="#f4ead5"/><rect x="176" y="80" width="48" height="7" rx="3.5" fill="#1f5a40" opacity=".3"/></g>
