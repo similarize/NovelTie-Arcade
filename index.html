@@ -4,255 +4,179 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>NovelTie Arcade</title>
-<meta name="description" content="Hard, clever games about words, roots and scripture.">
+<meta name="description" content="Clever games about words, roots and scripture.">
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=2" />
 <link rel="icon" type="image/png" sizes="32x32" href="lobby-assets/favicon-32.png?v=2" />
 <link rel="icon" type="image/png" sizes="192x192" href="lobby-assets/icon-192.png" />
 <link rel="manifest" href="manifest.json?v=4" />
 <link rel="apple-touch-icon" href="lobby-assets/apple-touch-icon.png">
-<meta name="theme-color" content="#f2f1ed">
+<meta name="theme-color" content="#f4f3ef">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&display=swap" rel="stylesheet">
 <style>
+/* NovelTie Arcade system: one family, one card, one cue (the section). See RATIONALE in redesign notes. */
 :root{
-  --bg:#f2f1ed; --surface:#ffffff; --ink:#0d0d0c; --ink-2:#3b3b38; --muted:#64645f;
-  --line:rgba(13,13,12,.12); --line-2:rgba(13,13,12,.22);
-  --brand:#0b3d2e; --brand-2:#14634a; --learn:#2b5fa6; --gold:#e0a91b;
-  --display:"Inter Tight",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --text:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
-  --pad:clamp(20px,4.2vw,48px); --r:6px;
+  --bg:#f4f3ef; --card:#fff; --ink:#141413; --muted:#62625c; --line:rgba(20,20,19,.1);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:40px; --s7:64px;
+  --r-card:16px; --r-icon:10px;
+  --cream:#f4ead5; --gold:#f2c14e;
+  --font:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-a{color:inherit}
-.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 var(--s5)}
+@media (min-width:760px){.wrap{padding:0 var(--s6)}}
 
-/* Top bar */
-.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0;font-size:14px}
-.mark{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:500;letter-spacing:-.01em}
-.mark i{width:22px;height:22px;flex:none;display:grid;grid-template-rows:repeat(3,1fr);gap:3px}
-.mark i::before,.mark i::after,.mark i span{content:"";background:var(--ink);border-radius:1px}
-.mark i span{width:66%}
-#installBtn{font:500 14px/1 var(--text);color:var(--ink);background:transparent;border:1px solid var(--line-2);border-radius:999px;padding:9px 14px;cursor:pointer}
-#installBtn:hover{background:var(--ink);color:var(--bg)}
-#installBtn[hidden]{display:none}
+/* Header */
+header{padding:var(--s6) 0 var(--s6)}
+.brand{margin:0;display:flex;align-items:center;gap:var(--s3);font-size:22px;font-weight:600;letter-spacing:-.02em}
+.brand img{width:32px;height:32px;border-radius:var(--r-icon)}
+.tag{margin:var(--s2) 0 0;font-size:17px;color:var(--muted)}
 
-/* Hero */
-.hero{display:grid;grid-template-columns:1fr;gap:28px;padding:clamp(36px,7vw,72px) 0 clamp(36px,5vw,56px)}
-.hero h1{margin:0;font-family:var(--display);font-weight:500;font-size:clamp(38px,6.4vw,76px);line-height:1.02;letter-spacing:-.035em;max-width:14ch}
-.hero h1 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
-.hero p{margin:0;font-size:clamp(17px,1.6vw,20px);line-height:1.45;color:var(--ink-2);max-width:36ch}
-.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0;padding:0;list-style:none;font-size:14px;color:var(--ink-2)}
-@media (min-width:900px){
-  .hero{grid-template-columns:7fr 5fr;align-items:end;gap:48px}
-}
-.lede{display:flex;flex-direction:column;gap:20px}
-
-/* Badges (meaning unchanged: Learn for yourself / Your play helps Similarize) */
-.badge{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;line-height:1;white-space:nowrap}
-.badge .dot{width:8px;height:8px;border-radius:50%;flex:none}
-.d-learn{background:var(--learn)}
-.d-help{background:var(--brand-2);box-shadow:0 0 0 3px rgba(20,99,74,.18)}
-.legend .badge{font-size:14px}
-.scene .badge{position:absolute;top:14px;left:14px;z-index:2;background:rgba(255,255,255,.92);color:var(--ink);padding:7px 10px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.scene .badge .sep{opacity:.4}
-
-/* Section labels, ND-style numerals */
-.sec{display:flex;align-items:baseline;gap:28px;padding:18px 0;border-top:1px solid var(--line);font-size:14px}
-.sec b{font-weight:500;width:18px}
-.sec span{font-weight:500}
-.sec small{margin-left:auto;color:var(--muted);font-size:13px;text-align:right}
-@media (max-width:640px){.sec{flex-wrap:wrap;gap:4px 20px}.sec small{margin-left:38px;flex-basis:100%;text-align:left}}
-
-/* Featured (helps Similarize) */
-.featured{display:grid;grid-template-columns:1fr;gap:clamp(16px,2vw,24px);padding:8px 0 clamp(56px,8vw,104px)}
-@media (min-width:860px){.featured{grid-template-columns:1fr 1fr}}
-.game{display:flex;flex-direction:column;background:var(--surface);border-radius:var(--r);overflow:hidden;text-decoration:none;color:inherit;outline:1px solid var(--line);outline-offset:-1px;transition:outline-color .2s}
-.game:hover{outline-color:var(--line-2)}
-.game:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-.scene{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;aspect-ratio:16/10;clip-path:inset(0 0 0 0)}
-.scene>.art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
-.game:hover .scene>.art{transform:scale(1.03)}
-.body{padding:clamp(20px,2.4vw,28px);display:flex;flex-direction:column;gap:14px;flex:1}
-.title{display:flex;align-items:center;gap:12px}
-.title img{width:36px;height:36px;border-radius:8px;flex:none}
-.title b{font-family:var(--display);font-size:clamp(24px,2.4vw,30px);font-weight:600;letter-spacing:-.025em;line-height:1.05}
-.hook{font-size:16px;line-height:1.5;color:var(--ink-2);margin:0;max-width:46ch}
-.facts{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
-.facts i{font-style:normal}
-.facts i+i::before{content:"·";padding:0 8px;opacity:.6}
-.foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:16px;border-top:1px solid var(--line)}
-.note{font-size:13px;color:var(--muted);line-height:1.3;display:flex;align-items:center;gap:8px}
-.note .dot{width:7px;height:7px;border-radius:50%;flex:none}
-.go{flex:none;display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--text);color:#fff;background:var(--ink);border-radius:999px;padding:12px 20px;transition:background .2s,gap .2s}
-.go svg{width:14px;height:14px}
-.game:hover .go{background:var(--brand);gap:12px}
-
-/* Just for fun (compact, de-emphasized) */
-.fun{padding:8px 0 clamp(48px,7vw,88px)}
-.game.mini{flex-direction:row;align-items:stretch;max-width:760px}
-.mini .scene{aspect-ratio:auto;width:clamp(128px,34vw,280px);min-height:132px;flex:none}
-.mini .body{padding:16px 18px;gap:8px}
-.mini .title img{width:28px;height:28px;border-radius:6px}
-.mini .title b{font-size:20px}
-.mini .hook{font-size:14.5px}
-.mini .foot{padding-top:10px}
-.mini .go{padding:10px 16px;font-size:14px;background:transparent;color:var(--ink);outline:1px solid var(--line-2);outline-offset:-1px}
-.mini:hover .go{background:var(--ink);color:#fff}
-@media (max-width:520px){.mini .facts{display:none}}
-
-/* ── Rootline scene: word strata, dug down to the root ── */
-.s-rl{background:#1b140e}
-.s-rl .art{flex-direction:column;justify-content:flex-end;padding:56px 0 0}
-.layer{width:100%;display:flex;align-items:baseline;justify-content:space-between;padding:0 clamp(18px,5%,36px);height:var(--h);}
-.layer{align-items:center}
-.layer small{font:500 10.5px/1 var(--text);letter-spacing:.14em;text-transform:uppercase;opacity:.7}
-.layer b{font-family:var(--serif);font-weight:400;font-size:clamp(22px,3vw,30px);letter-spacing:-.005em}
-.l1{--h:20%;background:#efe6d2;color:#2b2013}
-.l2{--h:22%;background:#c49a63;color:#24170a}
-.l3{--h:24%;background:#7d5a37;color:#f4e7d1}
-.l4{--h:34%;background:#3a2716;color:#f4e7d1;position:relative}
-.l4 b{color:#f3c04a;font-size:clamp(28px,3.8vw,40px)}
-.l1,.l2,.l3{box-shadow:inset 0 -1px 0 rgba(0,0,0,.12)}
-
-/* ── Line upon Line scene: sourced verse + study tracks ── */
-.s-lul{background:#f6efe0;color:#3c2a0e}
-.s-lul .art{flex-direction:column;padding:48px 9% 56px;text-align:center}
-.s-lul q{font-family:var(--serif);font-size:clamp(28px,3.6vw,42px);line-height:1.08;letter-spacing:-.01em;quotes:"\201C" "\201D"}
-.s-lul .ref{margin-top:14px;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#8a6a35}
-.s-lul .chips{position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:6px}
-.s-lul .chips span{border:1px solid rgba(60,42,14,.25);border-radius:999px;font-size:11.5px;padding:4px 10px;color:#5b4118;background:rgba(255,255,255,.55)}
-.s-lul .rule{width:40px;height:1px;background:#c9a96a;margin:0 auto 16px}
-
-/* ── Solitaire Word Match scene: felt + fanned word cards ── */
-.s-wm{background:#17804a}
-.s-wm .art{background:radial-gradient(120% 90% at 50% 30%,#22a35f 0%,#137140 75%)}
-.card{position:absolute;width:52px;height:72px;border-radius:5px;background:#fff;color:#14324a;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;text-align:center;font:600 8.5px/1.15 var(--text);letter-spacing:.04em;padding:3px}
-.card.back{background:repeating-linear-gradient(45deg,#2f6fd0 0 5px,#4a86dd 5px 10px);border:3px solid #fff}
-.card.crown{border:2px solid #e0a91b;background:#fffaf0;flex-direction:column;gap:2px}
-.card.crown span{font-size:12px}
-.card.half{background:#fff8e6;border:1.5px dashed #e0a91b}
-.card{width:58px;height:80px;font-size:9px}
-.c1{transform:translate(-75px,4px) rotate(-12deg)}
-.c2{transform:translate(-25px,-3px) rotate(-4deg)}
-.c3{transform:translate(25px,-1px) rotate(5deg)}
-.c4{transform:translate(75px,6px) rotate(12deg)}
-@media (max-width:520px){
-  .game.mini{flex-direction:column}
-  .mini .scene{width:auto;min-height:0;height:124px}
-  .c1{transform:translate(-96px,6px) rotate(-10deg)}.c2{transform:translate(-32px,-2px) rotate(-3deg)}
-  .c3{transform:translate(32px,-2px) rotate(3deg)}.c4{transform:translate(96px,6px) rotate(10deg)}
+/* Sections carry the meaning */
+section{padding-bottom:var(--s7)}
+h2{margin:0;font-size:28px;font-weight:600;letter-spacing:-.025em;line-height:1.15}
+@media (min-width:760px){h2{font-size:40px}}
+.lead{margin:var(--s2) 0 var(--s5);font-size:17px;color:var(--muted);max-width:46ch}
+.grid{display:grid;gap:var(--s4)}
+.featured .grid{grid-template-columns:1fr}
+.fun .grid{grid-template-columns:repeat(2,1fr)}
+@media (min-width:760px){
+  .grid{gap:var(--s5)}
+  .featured .grid{grid-template-columns:1fr 1fr}
+  .fun .grid{grid-template-columns:repeat(3,1fr)}
 }
 
-footer{border-top:1px solid var(--line);padding:22px 0 calc(28px + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;font-size:13px;color:var(--muted)}
-
-/* Entrance: soft clip reveal (ND-style), off for reduced motion */
-@media (prefers-reduced-motion:no-preference){
-  .reveal{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
-  .reveal.d1{animation-delay:.08s}.reveal.d2{animation-delay:.16s}.reveal.d3{animation-delay:.24s}
-  .reveal .scene{animation:wipe .9s cubic-bezier(.65,0,.2,1) both;animation-delay:inherit}
-  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  @keyframes wipe{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+/* The one card */
+.g{container-type:inline-size;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;color:inherit;text-decoration:none;transition:border-color .2s,transform .2s}
+.g:hover{border-color:rgba(20,20,19,.25)}
+.g:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.art{aspect-ratio:16/10;display:block}
+.art svg{display:block;width:100%;height:100%}
+.meta{display:flex;align-items:center;gap:var(--s3);padding:var(--s4)}
+.meta img{width:40px;height:40px;border-radius:var(--r-icon);flex:none}
+.txt{flex:1;min-width:0}
+.g h3{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.g p{margin:2px 0 0;font-size:15px;color:var(--muted);line-height:1.4}
+.play{flex:none;font-size:15px;font-weight:600;color:#fff;background:var(--ink);border-radius:999px;padding:var(--s2) var(--s4);transition:background .2s}
+.g:hover .play{background:#2c2c2a}
+@container (min-width:420px){
+  .meta{padding:var(--s5);gap:var(--s4)}
+  .meta img{width:48px;height:48px}
+  .g h3{font-size:22px}
+  .play{padding:var(--s3) var(--s5)}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@container (max-width:300px){
+  .meta{flex-wrap:wrap;align-items:flex-start;gap:var(--s2) var(--s3);padding:var(--s3)}
+  .txt{flex-basis:calc(100% - 44px)}
+  .meta img{width:32px;height:32px}
+  .g h3{font-size:15px}
+  .g p{font-size:13px}
+  .play{width:100%;text-align:center;font-size:13px;padding:var(--s2)}
+}
+
+footer{border-top:1px solid var(--line);padding:var(--s5) 0 calc(var(--s6) + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3);font-size:13px;color:var(--muted)}
+.install{display:flex;align-items:center;gap:var(--s3)}
+.install[hidden]{display:none}
+#installBtn{font:600 13px/1 var(--font);color:var(--ink);background:none;border:1px solid rgba(20,20,19,.25);border-radius:999px;padding:var(--s2) var(--s4);cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<nav class="top">
-  <a class="mark" href="/" aria-label="NovelTie Arcade home"><i aria-hidden="true"><span></span></i>NovelTie Arcade</a>
-  <button id="installBtn" hidden>Install app</button>
-</nav>
-
-<header class="hero">
-  <h1 class="reveal">Hard, clever games about words, roots and <em>scripture</em>.</h1>
-  <div class="lede reveal d1">
-    <p>Five minutes a round, and you'll leave knowing something new.</p>
-    <ul class="legend" aria-label="Badge key">
-      <li class="badge"><span class="dot d-learn" aria-hidden="true"></span>Learn for yourself</li>
-      <li class="badge"><span class="dot d-help" aria-hidden="true"></span>Your play helps Similarize</li>
-    </ul>
-  </div>
+<header>
+  <p class="brand"><img src="lobby-assets/icon-192.png" alt="" width="32" height="32">NovelTie Arcade</p>
+  <p class="tag">Clever games about words, roots and scripture.</p>
 </header>
 
 <main>
-<div class="sec"><b>I</b><span>Play that helps Similarize</span><small>Your picks teach Similarize which words and ideas belong together</small></div>
-<section class="featured" aria-label="Games that help Similarize">
+<section class="featured" aria-labelledby="h-help">
+  <h2 id="h-help">Help build Similarize</h2>
+  <p class="lead">Your picks in these games teach Similarize how words and ideas connect.</p>
+  <div class="grid">
 
-<a class="game reveal d1" href="https://games.noveltie.com/rootline/">
-<div class="scene s-rl" aria-hidden="true"><span class="badge"><span class="dot d-learn"></span>Learn <span class="sep">·</span> <span class="dot d-help"></span>Helps Similarize</span>
-<div class="art">
-<div class="layer l1"><small>English</small><b>tooth</b></div>
-<div class="layer l2"><small>Old English</small><b>tōþ</b></div>
-<div class="layer l3"><small>Proto-Germanic</small><b>*tanþs</b></div>
-<div class="layer l4"><small>Root</small><b>*h₃dónts</b></div>
-</div>
-</div>
-<div class="body">
-<div class="title"><img src="https://games.noveltie.com/rootline/assets/icon-192.png" alt="" width="36" height="36"><b>Rootline</b></div>
-<p class="hook">Dig a word down through the centuries to its oldest root, then unlock Greek, Cyrillic and Korean script gates.</p>
-<div class="facts"><i>Daily Dig</i><i>~3 min</i><i>Hear every layer</i><i>Hidden Weight track</i></div>
-<div class="foot"><span class="note"><span class="dot d-help" aria-hidden="true"></span>Hidden Weight picks help Similarize</span><span class="go">Play<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></div>
-</div>
-</a>
+    <a class="g" href="https://games.noveltie.com/rootline/">
+      <span class="art" aria-hidden="true"><svg viewBox="0 0 400 250">
+        <rect width="400" height="250" fill="#3a2a1e"/>
+        <circle cx="200" cy="125" r="96" fill="#4a3727"/>
+        <clipPath id="rl-core"><rect x="140" y="52" width="120" height="146" rx="14"/></clipPath>
+        <g clip-path="url(#rl-core)">
+          <rect x="140" y="52" width="120" height="32" fill="#f4ead5"/>
+          <rect x="140" y="84" width="120" height="32" fill="#c99a62"/>
+          <rect x="140" y="116" width="120" height="36" fill="#8a603a"/>
+          <rect x="140" y="152" width="120" height="46" fill="#22180f"/>
+        </g>
+        <path d="M200 62 V168 M200 104 L180 128 M200 132 L220 156" stroke="#f2c14e" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <circle cx="200" cy="176" r="11" fill="#f2c14e"/>
+      </svg></span>
+      <div class="meta">
+        <img src="https://games.noveltie.com/rootline/assets/icon-192.png" alt="" width="48" height="48">
+        <div class="txt"><h3>Rootline</h3><p>Dig any word down to its oldest root.</p></div>
+        <span class="play">Play</span>
+      </div>
+    </a>
 
-<a class="game reveal d2" href="https://games.noveltie.com/line-upon-line/">
-<div class="scene s-lul" aria-hidden="true"><span class="badge"><span class="dot d-learn"></span>Learn <span class="sep">·</span> <span class="dot d-help"></span>Helps Similarize</span>
-<div class="art">
-<div class="rule"></div>
-<q>line upon line, precept upon precept</q>
-<div class="ref">Doctrine and Covenants 98:12</div>
-<div class="chips"><span>Doctrine</span><span>History</span><span>Mastery</span></div>
-</div>
-</div>
-<div class="body">
-<div class="title"><img src="https://games.noveltie.com/line-upon-line/assets/icon-192.png" alt="" width="36" height="36"><b>Line upon Line</b></div>
-<p class="hook">Gospel study that goes past the easy answer: doctrine, Church history and Doctrinal Mastery, with every quote sourced.</p>
-<div class="facts"><i>Daily Five</i><i>2-player Family Duel</i><i>Listen aloud</i></div>
-<div class="foot"><span class="note"><span class="dot d-help" aria-hidden="true"></span>Bridges taps help Similarize</span><span class="go">Play<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></div>
-</div>
-</a>
+    <a class="g" href="https://games.noveltie.com/line-upon-line/">
+      <span class="art" aria-hidden="true"><svg viewBox="0 0 400 250">
+        <rect width="400" height="250" fill="#22304d"/>
+        <circle cx="200" cy="125" r="96" fill="#2e3e60"/>
+        <rect x="166" y="56" width="56" height="13" rx="6.5" fill="#f2c14e"/>
+        <rect x="150" y="80" width="80" height="13" rx="6.5" fill="#f4ead5"/>
+        <rect x="170" y="104" width="84" height="13" rx="6.5" fill="#f4ead5"/>
+        <rect x="150" y="128" width="96" height="13" rx="6.5" fill="#f4ead5"/>
+        <path d="M128 162 Q164 150 200 164 Q236 150 272 162 V194 Q236 182 200 196 Q164 182 128 194 Z" fill="#f4ead5"/>
+        <path d="M200 164 V196" stroke="#2e3e60" stroke-width="4"/>
+      </svg></span>
+      <div class="meta">
+        <img src="https://games.noveltie.com/line-upon-line/assets/icon-192.png" alt="" width="48" height="48">
+        <div class="txt"><h3>Line upon Line</h3><p>Gospel study past the easy answer.</p></div>
+        <span class="play">Play</span>
+      </div>
+    </a>
 
+  </div>
 </section>
 
-<div class="sec"><b>II</b><span>Just for fun</span><small>Learning games that don't feed Similarize</small></div>
-<section class="fun" aria-label="Just for fun">
+<section class="fun" aria-labelledby="h-fun">
+  <h2 id="h-fun">Just for fun</h2>
+  <p class="lead">Good for your brain, just for you.</p>
+  <div class="grid">
 
-<a class="game mini reveal d3" href="https://games.noveltie.com/solitaire-word-match/">
-<div class="scene s-wm" aria-hidden="true">
-<div class="art">
-<div class="card back c1"></div>
-<div class="card c2">SATURN</div>
-<div class="card crown c3"><span>👑</span>PLANETS</div>
-<div class="card half c4">SEA +<br>BISCUIT</div>
-</div>
-</div>
-<div class="body">
-<div class="title"><img src="https://games.noveltie.com/solitaire-word-match/assets/icon-192.png" alt="" width="28" height="28"><b>Solitaire Word Match</b></div>
-<p class="hook">Solitaire where the suits are secret. Sort every card into its hidden category.</p>
-<div class="facts"><i>100 levels</i><i>Classic + Super Hard</i><i>1–2 players</i></div>
-<div class="foot"><span class="note"><span class="badge"><span class="dot d-learn" aria-hidden="true"></span>Just for fun &amp; learning</span></span><span class="go">Play</span></div>
-</div>
-</a>
+    <a class="g" href="https://games.noveltie.com/solitaire-word-match/">
+      <span class="art" aria-hidden="true"><svg viewBox="0 0 400 250">
+        <rect width="400" height="250" fill="#1f5a40"/>
+        <circle cx="200" cy="125" r="96" fill="#2a6b4e"/>
+        <g transform="rotate(-17 200 215)"><rect x="162" y="62" width="76" height="108" rx="9" fill="#f4ead5"/><rect x="176" y="80" width="48" height="7" rx="3.5" fill="#1f5a40" opacity=".3"/></g>
+        <g transform="rotate(17 200 215)"><rect x="162" y="62" width="76" height="108" rx="9" fill="#f4ead5"/><rect x="176" y="80" width="48" height="7" rx="3.5" fill="#1f5a40" opacity=".3"/></g>
+        <rect x="162" y="58" width="76" height="108" rx="9" fill="#f4ead5" stroke="#f2c14e" stroke-width="5"/>
+        <path d="M178 124 L182 94 L192 108 L200 88 L208 108 L218 94 L222 124 Z" fill="#f2c14e"/>
+        <rect x="178" y="136" width="44" height="7" rx="3.5" fill="#1f5a40" opacity=".3"/>
+      </svg></span>
+      <div class="meta">
+        <img src="https://games.noveltie.com/solitaire-word-match/assets/icon-192.png" alt="" width="48" height="48">
+        <div class="txt"><h3>Solitaire Word Match</h3><p>Solitaire where the suits are secret.</p></div>
+        <span class="play">Play</span>
+      </div>
+    </a>
 
+  </div>
 </section>
 </main>
 
 <footer>
   <span>NovelTie Arcade</span>
-  <span>Install games first, then the arcade, for separate home-screen icons.</span>
+  <div class="install" id="install" hidden><span>Install games first for separate icons.</span><button id="installBtn">Install app</button></div>
 </footer>
 </div>
 <script>
 (function(){
-  var btn=document.getElementById('installBtn'), deferred=null;
-  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;btn.hidden=false;});
-  btn.addEventListener('click',function(){if(!deferred)return;deferred.prompt();deferred.userChoice.then(function(){deferred=null;btn.hidden=true;});});
-  window.addEventListener('appinstalled',function(){deferred=null;btn.hidden=true;});
+  var box=document.getElementById('install'), btn=document.getElementById('installBtn'), deferred=null;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;box.hidden=false;});
+  btn.addEventListener('click',function(){if(!deferred)return;deferred.prompt();deferred.userChoice.then(function(){deferred=null;box.hidden=true;});});
+  window.addEventListener('appinstalled',function(){deferred=null;box.hidden=true;});
 })();
 </script>
 </body>
